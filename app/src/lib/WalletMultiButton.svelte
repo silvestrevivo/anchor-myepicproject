@@ -1,17 +1,22 @@
 <script lang="ts">
-	import { walletStore } from '../utils/walletStore';
+	import type { WalletStore } from '../utils/walletStore';
+	import { getContext } from 'svelte';
 	import WalletButton from './WalletButton.svelte';
 	import WalletConnectButton from './WalletConnectButton.svelte';
 	import WalletModal from './WalletModal.svelte';
 
-	$: ({ publicKey, wallet, disconnect, connect, select } = $walletStore);
+	let walletStore: WalletStore;
+	$: walletStore = getContext('walletStore');
+	$: console.log('myWallet passed by ContextAPI: in Wallet multibutton', walletStore);
+
+	$: ({ publicKey, wallet, disconnect, connect, select } = walletStore);
 
 	let dropDrownVisible = false,
 		modalVisible = false,
 		copied = false;
 
 	$: base58 = publicKey && publicKey?.toBase58();
-	$: content = showAddressContent($walletStore);
+	$: content = showAddressContent(walletStore);
 
 	const copyAddress = async () => {
 		if (!base58) return;
