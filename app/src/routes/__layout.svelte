@@ -2,9 +2,8 @@
 	import { onMount, setContext } from 'svelte';
 	import { clusterApiUrl } from '@solana/web3.js';
 	import WalletProvider from '../lib/WalletProvider.svelte';
-	import ContextProvider from '../lib/ContextProvider.svelte';
-	// import AnchorConnectionProvider from '../lib/AnchorConnectionProvider.svelte';
-
+	// import ContextProvider from '../lib/ContextProvider.svelte';
+	import AnchorConnectionProvider from '../lib/AnchorConnectionProvider.svelte';
 	import idl from '../../../target/idl/myepicproject.json';
 	import '../styles/styles.css';
 
@@ -21,16 +20,14 @@
 	});
 </script>
 
-<!-- <WalletProvider {localStorageKey} {wallets} autoConnect /> -->
 <WalletProvider {localStorageKey} {wallets} autoConnect let:walletStoreMounted>
 	<!-- <AnchorConnectionProvider {network} {idl} /> -->
 	{#if walletStoreMounted}
-		<ContextProvider {walletStoreMounted}>
-			<div>
-				<slot><!-- optional fallback --></slot>
-			</div>
-		</ContextProvider>
+		<AnchorConnectionProvider {network} {idl} />
+		<div>
+			<slot />
+		</div>
 	{:else}
-		<p>mounting wallet</p>
+		<p>mounting wallet...</p>
 	{/if}
 </WalletProvider>

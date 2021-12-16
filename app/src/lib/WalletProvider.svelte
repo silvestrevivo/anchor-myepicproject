@@ -7,10 +7,8 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import type { Wallet, WalletError } from '@solana/wallet-adapter-base';
-	// import { initialize } from '../utils/walletStore';
-	// import type { WalletStore } from '../utils/walletStore';
 
 	export let localStorageKey: string,
 		wallets: Wallet[],
@@ -21,18 +19,15 @@
 
 	onMount(async () => {
 		const { initialize, walletStore } = await import('../utils/walletStore');
-
-		// wallets = walletsMap;
-		// initialize({ wallets, autoConnect, localStorageKey, onError });
 		initializeWallet = initialize;
-
-		setTimeout(() => {
-			walletStoreMounted = walletStore;
-		}, 5000);
+		walletStoreMounted = walletStore;
 	});
+
 	$: wallets &&
 		initializeWallet &&
 		initializeWallet({ wallets, autoConnect, localStorageKey, onError });
+
+	$: walletStoreMounted && setContext('walletStore', walletStoreMounted);
 </script>
 
 <svelte:head>

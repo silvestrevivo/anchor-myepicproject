@@ -19,17 +19,17 @@ const config = {
 
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
-		vite: {
-				define: {
-						global: {},
-				},
-				// ssr: {
-				// 	noExternal: [
-				// 		'buffer',
-				// 		'process'
-				// 	]
-				// }
-		}
+		// vite: {
+		// 		define: {
+		// 				global: {},
+		// 		},
+		// 		// ssr: {
+		// 		// 	noExternal: [
+		// 		// 		'buffer',
+		// 		// 		'process'
+		// 		// 	]
+		// 		// }
+		// }
 	}
 };
 

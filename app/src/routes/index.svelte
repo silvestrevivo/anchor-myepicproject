@@ -1,27 +1,11 @@
 <script lang="ts">
 	import WalletMultiButton from '$lib/WalletMultiButton.svelte';
-	import { onMount, getContext } from 'svelte';
-	// import { walletStore } from '../utils/walletStore';
+	import { getContext } from 'svelte';
+	import type { WalletStore } from '../utils/walletStore';
 	import { workSpace } from '../utils/workSpace';
 
-	$: myWallet = getContext('walletStore');
-	$: console.log('myWallet passed by ContextAPI: ', myWallet);
-
-	// $: console.log('walletStore en index!!!!: ', walletStore);
-	// $: console.log('walletStore: ', $walletStore);
-	// $: console.log('workSpace: ', $workSpace);
-	// $: console.log('getContext', getContext('walletStore'));
-
-	// setTimeout(() => {
-	// 	console.log('getContext', getContext('walletStore'));
-	// }, 2000);
-	// $: console.log('wallet in index!: ', $wallet);
-	// let wallet;
-
-	// onMount(async () => {
-	// 	const { walletStore } = await import('../utils/walletStore');
-	// 	wallet = walletStore;
-	// });
+	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
+	$: console.log('walletStore in index: ', walletStore);
 </script>
 
 <h1>Welcome to SvelteKit</h1>

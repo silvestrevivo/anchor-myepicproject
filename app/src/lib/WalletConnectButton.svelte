@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import { walletStore } from '../utils/walletStore';
 	import { getContext } from 'svelte';
 	import type { WalletStore } from '../utils/walletStore';
 	import WalletButton from './WalletButton.svelte';
@@ -8,11 +7,10 @@
 
 	let content;
 
-	let walletStore: WalletStore;
-	$: walletStore = getContext('walletStore');
-	$: console.log('myWallet passed by ContextAPI: in Wallet ConnectButton', walletStore);
+	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
+	$: console.log('myWallet passed by ContextAPI: in Wallet ConnectButton', $walletStore);
 
-	$: ({ wallet, connect, connecting, connected } = walletStore);
+	$: ({ wallet, connect, connecting, connected } = $walletStore);
 
 	$: {
 		content = 'Connect Wallet';
