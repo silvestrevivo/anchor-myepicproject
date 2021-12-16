@@ -385,10 +385,25 @@ code {
 	object-fit: cover;
 }
 
-.gif-item p {
+.gif-item .votes {
+	display: flex;
 	color: white;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.gif-item .votes p {
 	letter-spacing: 1.5px;
 }
+
+.gif-item .votes span {
+	border: 1px solid white;
+	padding: 5px;
+	border-radius: 5px;
+	display: inline-block;
+	cursor: pointer;
+}
+
 .connected-container input[type='text'] {
 	display: inline-block;
 	color: white;
