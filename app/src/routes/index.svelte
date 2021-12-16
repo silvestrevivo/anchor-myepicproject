@@ -26,7 +26,7 @@
 			{/if}
 		</div>
 		<div class="footer-container">
-			<img alt="Twitter Logo" class="twitter-logo" src="../../static/twitter-logo.svg" />
+			<img alt="Twitter Logo" class="twitter-logo" src="twitter-logo.svg" />
 			<a class="footer-text" href={TWITTER_LINK} target="_blank" rel="noreferrer"
 				>{`built by @${TWITTER_HANDLE}`}</a
 			>
