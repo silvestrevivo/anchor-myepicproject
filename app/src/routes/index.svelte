@@ -6,6 +6,7 @@
 
 	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
 	$: console.log('walletStore in index: ', walletStore);
+	$: console.log('workSpace: ', workSpace);
 </script>
 
 <h1>Welcome to SvelteKit</h1>
