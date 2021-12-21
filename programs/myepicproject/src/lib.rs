@@ -12,19 +12,53 @@ pub mod myepicproject {
         Ok(())
     }
 
-    pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> ProgramResult {
+    pub fn add_gif(ctx: Context<AddGif>, gif_link: String, id: String) -> ProgramResult {
         let base_account = &mut ctx.accounts.base_account;
         let user = &mut ctx.accounts.user;
 
         // Build the struct.
         let item = ItemStruct {
+            id: id.to_string(),
             gif_link: gif_link.to_string(),
             user_address: *user.to_account_info().key,
+            points: 0,
         };
 
         // Add it to the gif_list vector.
         base_account.gif_list.push(item);
         base_account.total_gifs += 1;
+        Ok(())
+    }
+
+    pub fn vote_gif(ctx: Context<VoteGif>, id: String) -> ProgramResult {
+        let base_account = &mut ctx.accounts.base_account;
+        // let user = &mut ctx.accounts.user;
+        let list = &base_account.gif_list;
+
+        // Map to add score.
+        let new_list = list
+            .iter()
+            .map(|x| {
+                if x.id == id {
+                    ItemStruct {
+                        id: (*x.id).to_string(),
+                        gif_link: (*x.gif_link).to_string(),
+                        user_address: x.user_address,
+                        points: x.points + 1,
+                    }
+                } else {
+                    ItemStruct {
+                        id: (*x.id).to_string(),
+                        gif_link: (*x.gif_link).to_string(),
+                        user_address: x.user_address,
+                        points: x.points,
+                    }
+                }
+            })
+            .collect();
+
+        base_account.gif_list = new_list;
+
         Ok(())
     }
 }
@@ -48,11 +82,20 @@ pub struct AddGif<'info> {
     pub user: Signer<'info>,
 }
 
+#[derive(Accounts)]
+pub struct VoteGif<'info> {
+    #[account(mut)]
+    pub base_account: Account<'info, BaseAccount>,
+    pub user: Signer<'info>,
+}
+
 // Create a custom struct for us to work with.
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct ItemStruct {
+    pub id: String,
     pub gif_link: String,
     pub user_address: Pubkey,
+    pub points: u64,
 }
 
 #[account]

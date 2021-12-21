@@ -7,16 +7,27 @@
 </script>
 
 <script lang="ts">
-	import type { Wallet } from '@solana/wallet-adapter-base';
-	import { initialize } from '../utils/walletStore';
-	import type { WalletError } from '@solana/wallet-adapter-base';
+	import { onMount, setContext } from 'svelte';
+	import type { Wallet, WalletError } from '@solana/wallet-adapter-base';
 
 	export let localStorageKey: string,
 		wallets: Wallet[],
 		autoConnect = false,
 		onError = (error: WalletError) => console.error(error);
 
-	$: wallets && initialize({ wallets, autoConnect, localStorageKey, onError });
+	let initializeWallet, walletStoreMounted;
+
+	onMount(async () => {
+		const { initialize, walletStore } = await import('../utils/walletStore');
+		initializeWallet = initialize;
+		walletStoreMounted = walletStore;
+	});
+
+	$: wallets &&
+		initializeWallet &&
+		initializeWallet({ wallets, autoConnect, localStorageKey, onError });
+
+	$: walletStoreMounted && setContext('walletStore', walletStoreMounted);
 </script>
 
 <svelte:head>
@@ -24,3 +35,5 @@
 		window.global = window;
 	</script>
 </svelte:head>
+
+<slot walletStoreMounted={$walletStoreMounted} />

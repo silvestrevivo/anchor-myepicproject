@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { walletStore } from '../utils/walletStore';
+	import type { WalletStore } from '../utils/walletStore';
+	import { getContext } from 'svelte';
 	import WalletButton from './WalletButton.svelte';
 	import WalletConnectButton from './WalletConnectButton.svelte';
 	import WalletModal from './WalletModal.svelte';
+
+	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
+	$: console.log('myWallet passed by ContextAPI: in Wallet multibutton', $walletStore);
 
 	$: ({ publicKey, wallet, disconnect, connect, select } = $walletStore);
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { walletStore } from '../utils/walletStore';
+	import type { WalletStore } from '../utils/walletStore';
+	import { getContext } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
 	import WalletButton from './WalletButton.svelte';
 
@@ -8,6 +9,9 @@
 	let showMoreOptions = false,
 		backdrop: HTMLDivElement,
 		container: HTMLDivElement;
+
+	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
+	$: console.log('myWallet passed by ContextAPI: in Wallet multibutton', $walletStore);
 
 	$: numberOfWalletsShown = showMoreOptions ? $walletStore.wallets.length : maxNumberOfWallets;
 

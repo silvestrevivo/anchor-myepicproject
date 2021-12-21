@@ -1,4 +1,5 @@
 const anchor = require('@project-serum/anchor');
+const { v4: uuidv4 } = require('uuid');
 
 describe('myepicproject', () => {
 
@@ -14,6 +15,7 @@ describe('myepicproject', () => {
 
   // Need the system program, will talk about this soon.
   const { SystemProgram } = anchor.web3;
+  let id = uuidv4();
 
   it('Is initialized!', async () => {
     const tx = await program.rpc.initialize({
@@ -32,7 +34,23 @@ describe('myepicproject', () => {
   });
 
   it('adds a new gif', async () => {
-    const tx = await program.rpc.addGif('this is the url of my image', {
+    const tx = await program.rpc.addGif('this is the url of my image', id, {
+      accounts: {
+        baseAccount: baseAccount.publicKey,
+        user: provider.wallet.publicKey,
+      }
+    })
+
+    console.log("Your transaction signature adding gif", tx);
+    // Fetch data from the account.
+    let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
+    console.log('👀 GIF Count', account.totalGifs.toString())
+    console.log('👀 GIF List', account.gifList)
+    console.log('👀 Account', account)
+  });
+
+  it('vote a gif', async () => {
+    const tx = await program.rpc.voteGif( id, {
       accounts: {
         baseAccount: baseAccount.publicKey,
         user: provider.wallet.publicKey,
