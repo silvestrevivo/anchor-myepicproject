@@ -90,7 +90,7 @@
 				<div class="gif-item">
 					<img src={gifLink} alt={gifLink} />
 					<div class="votes">
-						<p>{userAddress}</p>
+						<p>{`${userAddress}`.slice(0, 4) + '..' + `${userAddress}`.slice(-4)}</p>
 						<span on:click={() => voteGif(id)}>{points}</span>
 					</div>
 				</div>
