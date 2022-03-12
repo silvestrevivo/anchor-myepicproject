@@ -3,8 +3,6 @@
 	import { clusterApiUrl } from '@solana/web3.js';
 	import { WalletProvider } from '@svelte-on-solana/wallet-adapter-ui';
 	import { AnchorConnectionProvider } from '@svelte-on-solana/wallet-adapter-anchor';
-	// import WalletProvider from '../lib/WalletProvider.svelte';
-	// import AnchorConnectionProvider from '../lib/AnchorConnectionProvider.svelte';
 	import idl from '../../../target/idl/myepicproject.json';
 	import '../styles/styles.css';
 
