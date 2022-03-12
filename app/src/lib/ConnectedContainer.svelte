@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { workSpace } from '../utils/workSpace';
+	import { workSpace } from '@svelte-on-solana/wallet-adapter-anchor';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let gifList = null,

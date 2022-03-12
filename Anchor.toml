@@ -5,7 +5,7 @@ myepicproject = "FS7Mva1nUZCuNcevF4R53uXYbR8VMEBTDjojHTAJFrFr"
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "/Users/silvestrevivo/.config/solana/id.json"
 
 [scripts]

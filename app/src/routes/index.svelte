@@ -1,10 +1,8 @@
 <script lang="ts">
+	import { WalletMultiButton } from '@svelte-on-solana/wallet-adapter-ui';
 	import ConnectedContainer from '$lib/ConnectedContainer.svelte';
-	import WalletMultiButton from '$lib/WalletMultiButton.svelte';
-	import { getContext } from 'svelte';
-	import type { WalletStore } from '../utils/walletStore';
+	import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
 
-	const walletStore: SvelteStore<WalletStore> = getContext('walletStore');
 	$: ({ connected } = $walletStore);
 
 	// Constants
