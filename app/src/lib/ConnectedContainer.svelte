@@ -1,15 +1,9 @@
 <script lang="ts">
-	import { workSpace } from '@svelte-on-solana/wallet-adapter-anchor';
 	import { v4 as uuidv4 } from 'uuid';
+	import { workSpace } from '@svelte-on-solana/wallet-adapter-anchor';
 
 	let gifList = null,
 		value = '';
-	const items = [
-		'https://i.giphy.com/media/eIG0HfouRQJQr1wBzz/giphy.webp',
-		'https://media3.giphy.com/media/L71a8LW2UrKwPaWNYM/giphy.gif?cid=ecf05e47rr9qizx2msjucl1xyvuu47d7kf25tqt2lvo024uo&rid=giphy.gif&ct=g',
-		'https://media4.giphy.com/media/AeFmQjHMtEySooOc8K/giphy.gif?cid=ecf05e47qdzhdma2y3ugn32lkgi972z9mpfzocjj6z1ro4ec&rid=giphy.gif&ct=g',
-		'https://i.giphy.com/media/PAqjdPkJLDsmBRSYUp/giphy.webp'
-	];
 
 	const createGifAccount = async () => {
 		try {
@@ -104,17 +98,3 @@
 		</div>
 	</div>
 {/if}
-
-<!-- <div class="connected-container">
-	<div class="gif-grid">
-		{#each items as items}
-			<div class="gif-item">
-				<img src={items} alt={items} />
-				<div class="votes">
-					<p>dfjhgfhgfdhghfgfdgfgfgdfsdf</p>
-					<span>0</span>
-				</div>
-			</div>
-		{/each}
-	</div>
-</div> -->
