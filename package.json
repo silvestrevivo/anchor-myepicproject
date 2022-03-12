@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@project-serum/anchor": "^0.17.0",
+        "@project-serum/anchor": "^0.22.1",
         "uuid": "^8.3.2"
     },
     "devDependencies": {
