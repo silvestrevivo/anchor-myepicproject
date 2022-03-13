@@ -9,6 +9,7 @@ pub mod myepicproject {
         let base_account = &mut ctx.accounts.base_account;
         // Initialize total_gifs.
         base_account.total_gifs = 0;
+        base_account.gif_list = Vec::new();
         Ok(())
     }
 
