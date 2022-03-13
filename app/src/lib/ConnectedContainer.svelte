@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { v4 as uuidv4 } from 'uuid';
 	import { workSpace } from '@svelte-on-solana/wallet-adapter-anchor';
+	import { walletStore } from '@svelte-on-solana/wallet-adapter-core';
+	import { Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
+
+	const connection = new Connection($workSpace.network, 'confirmed');
 
 	let gifList = null,
-		value = '';
+		value = '',
+		balance = 0;
 
 	const createGifAccount = async () => {
 		try {
@@ -71,6 +76,22 @@
 			console.log('Error voting GIF:', error);
 		}
 	}
+
+	async function getBalance(walletStore) {
+		let wallet = walletStore.publicKey;
+		balance = (await connection.getBalance(wallet)) / LAMPORTS_PER_SOL;
+	}
+
+	async function airdrop() {
+		let airdropSignature = await connection.requestAirdrop(
+			$walletStore.publicKey,
+			LAMPORTS_PER_SOL
+		);
+		await connection.confirmTransaction(airdropSignature);
+		getBalance($walletStore);
+	}
+
+	$: getBalance($walletStore);
 </script>
 
 {#if gifList === null}
@@ -79,6 +100,13 @@
 			Do One-Time Initialization For GIF Program Account
 		</button>
 	</div>
+
+	{#if $walletStore.connected && balance <= 0.1}
+		<div class="faucet">
+			<p>You don't have enough SOL..</p>
+			<button on:click={airdrop}>Click to put some money in your wallet</button>
+		</div>
+	{/if}
 {:else}
 	<div class="connected-container">
 		<form on:submit|preventDefault={sendGif}>
