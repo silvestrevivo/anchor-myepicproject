@@ -65,6 +65,7 @@ pub mod myepicproject {
 }
 
 // this approach is not the good one
+// this is based in a state where is not possible to define the space
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(init, payer = user, space = 9000)]
