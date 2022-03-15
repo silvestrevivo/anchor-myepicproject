@@ -88,6 +88,7 @@ describe('myepicproject', () => {
 
     // Fetch the account details of the updated post.
     const updatedPostAccount = await program.account.post.fetch(postTest.publicKey);
+    console.log('updatedPostAccount: ', updatedPostAccount);
 
     assert.equal(updatedPostAccount.id.toBase58(), postTest.publicKey.toBase58());
     assert.equal(updatedPostAccount.points, 1);
