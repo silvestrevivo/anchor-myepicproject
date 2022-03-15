@@ -9,6 +9,7 @@
 	let gifList = [],
 		value = '',
 		balance = 0;
+	console.log('balance: ', balance);
 
 	const addGif = async () => {
 		let postAccount = web3.Keypair.generate();
@@ -22,13 +23,13 @@
 				},
 				signers: [postAccount]
 			});
+
+			const post = await $workSpace.program.account.post.fetch(postAccount.publicKey);
+
+			gifList = gifList.concat(post);
 		} catch (error) {
-			console.log('Error', error);
+			console.log('Error', error.msg);
 		}
-
-		const post = await $workSpace.program.account.post.fetch(postAccount.publicKey);
-
-		gifList = gifList.concat(post);
 	};
 
 	async function voteGif(id) {
@@ -70,7 +71,7 @@
 	$: getBalance($walletStore);
 </script>
 
-{#if balance === null}
+{#if balance === 0}
 	{#if $walletStore.connected && balance <= 0.1}
 		<div class="faucet">
 			<p>You don't have enough SOL..</p>
