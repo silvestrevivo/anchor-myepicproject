@@ -10,10 +10,10 @@ describe('myepicproject', () => {
   // Define program
   const program = anchor.workspace.Myepicproject;
 
+  // we define an initial post outside to be reused on another test
   const postTest = anchor.web3.Keypair.generate();
 
   it('Adds a new GIF!', async () => {
-
     await program.rpc.addGif('link address', {
       accounts: {
         post: postTest.publicKey,
@@ -26,6 +26,7 @@ describe('myepicproject', () => {
     // Fetch the account details of the created post.
     const postAccount = await program.account.post.fetch(postTest.publicKey);
 
+    // assertions
     assert.equal(postAccount.id.toBase58(), postTest.publicKey.toBase58());
     assert.equal(postAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
     assert.equal(postAccount.gifLink, 'link address');
@@ -47,6 +48,7 @@ describe('myepicproject', () => {
     // Fetch the account details of the created post.
     const postAccount = await program.account.post.fetch(post.publicKey);
 
+    // assertions
     assert.equal(postAccount.id.toBase58(), post.publicKey.toBase58());
     assert.equal(postAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
     assert.equal(postAccount.gifLink, 'second link address');
