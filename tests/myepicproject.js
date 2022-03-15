@@ -1,6 +1,5 @@
 const assert = require("assert");
 const anchor = require('@project-serum/anchor');
-const { v4: uuidv4 } = require('uuid');
 
 describe('myepicproject', () => {
 
@@ -11,77 +10,86 @@ describe('myepicproject', () => {
   // Define program
   const program = anchor.workspace.Myepicproject;
 
-  // Create an account keypair for our program to use.
-  const baseAccount = anchor.web3.Keypair.generate();
+  const postTest = anchor.web3.Keypair.generate();
 
-  // Need the system program, will talk about this soon.
-  const { SystemProgram } = anchor.web3;
-  let id = uuidv4();
+  it('Adds a new GIF!', async () => {
 
-  it('Is initialized!', async () => {
-    const tx = await program.rpc.initialize({
+    await program.rpc.addGif('link address', {
       accounts: {
-        baseAccount: baseAccount.publicKey,
-        user: provider.wallet.publicKey,
-        systemProgram: SystemProgram.programId,
+        post: postTest.publicKey,
+        author: program.provider.wallet.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
       },
-      signers: [baseAccount],
+      signers: [postTest]
     });
-    console.log("Your transaction signature", tx);
 
-    // Fetch data from the account.
-    let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    console.log('👀 GIF Count', account.totalGifs.toString())
-    console.log('👀 GIF List', account.gifList)
-    console.log('👀 Account', account)
-    assert.ok(account.totalGifs.eq(new anchor.BN(0)));
-    assert.equal(account.gifList.toString(), []);
+    // Fetch the account details of the created post.
+    const postAccount = await program.account.post.fetch(postTest.publicKey);
+
+    assert.equal(postAccount.id.toBase58(), postTest.publicKey.toBase58());
+    assert.equal(postAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
+    assert.equal(postAccount.gifLink, 'link address');
+    assert.ok(postAccount.points);
   });
 
-  it('adds a new gif', async () => {
-    const tx = await program.rpc.addGif('this is the url of my image', id, {
-      accounts: {
-        baseAccount: baseAccount.publicKey,
-        user: provider.wallet.publicKey,
-      }
-    })
+  it('Adds a second GIF!', async () => {
+    const post = anchor.web3.Keypair.generate();
 
-    console.log("Your transaction signature adding gif", tx);
-    // Fetch data from the account.
-    let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    console.log('👀 GIF Count', account.totalGifs.toString())
-    console.log('👀 GIF List', account.gifList)
-    console.log('👀 Account', account)
-    assert.ok(account.totalGifs.toString() == 1);
-    assert.ok(account.gifList.toString() == [
-      { id,
-        gif_link: 'this is the url of my image',
-        user_address: provider.wallet.publicKey.toString(),
-        points: 0 }
-      ]
-    );
+    await program.rpc.addGif('second link address', {
+      accounts: {
+        post: post.publicKey,
+        author: program.provider.wallet.publicKey,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      },
+      signers: [post]
+    });
+
+    // Fetch the account details of the created post.
+    const postAccount = await program.account.post.fetch(post.publicKey);
+
+    assert.equal(postAccount.id.toBase58(), post.publicKey.toBase58());
+    assert.equal(postAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
+    assert.equal(postAccount.gifLink, 'second link address');
+    assert.ok(postAccount.points);
   });
 
-  it('vote a gif', async () => {
-    const tx = await program.rpc.voteGif( id, {
-      accounts: {
-        baseAccount: baseAccount.publicKey,
-        user: provider.wallet.publicKey,
-      }
-    })
+  it('cannot provide a link with more than 200 characters', async () => {
+    const post = anchor.web3.Keypair.generate();
 
-    console.log("Your transaction signature adding gif", tx);
-    // Fetch data from the account.
-    let account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-    console.log('👀 GIF Count', account.totalGifs.toString())
-    console.log('👀 GIF List', account.gifList)
-    console.log('👀 Account', account)
-    assert.ok(account.totalGifs.eq(new anchor.BN(1)));
-    assert.equal(account.gifList.toString(), [
-      { id,
-        gif_link: 'this is the url of my image',
-        user_address: provider.wallet.publicKey.toString(),
-        points: 1 }
-      ]);
+    const linkWith201Chars = 'x'.repeat(201);
+    try {
+      await program.rpc.addGif(linkWith201Chars, {
+        accounts: {
+          post: post.publicKey,
+          author: program.provider.wallet.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [post]
+      });
+    } catch (error) {
+      return;
+    }
+
+    assert.fail('The instruction should have failed with a 201-character link.');
+  });
+
+  it('can fetch all posts', async () => {
+    const postAccounts = await program.account.post.all();
+
+    assert.equal(postAccounts.length, 2);
+  });
+
+  it('Vote the post test!', async () => {
+    await program.rpc.voteGif({
+      accounts: {
+        post: postTest.publicKey,
+      },
+    });
+
+    // Fetch the account details of the updated post.
+    const updatedPostAccount = await program.account.post.fetch(postTest.publicKey);
+
+    assert.equal(updatedPostAccount.id.toBase58(), postTest.publicKey.toBase58());
+    assert.equal(updatedPostAccount.points, 1);
   });
 });
