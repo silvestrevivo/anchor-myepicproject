@@ -19,9 +19,9 @@ pub mod myepicproject {
 
         // Build the struct.
         let item = ItemStruct {
-            id: id.to_string(),
-            gif_link: gif_link.to_string(),
-            user_address: *user.to_account_info().key,
+            id,
+            gif_link,
+            user_address: *user.key,
             points: 0,
         };
 
@@ -64,6 +64,7 @@ pub mod myepicproject {
     }
 }
 
+// this approach is not the good one
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(init, payer = user, space = 9000)]
@@ -73,8 +74,6 @@ pub struct Initialize<'info> {
     pub system_program: Program<'info, System>,
 }
 
-// Specify what data you want in the AddGif Context.
-// Getting a handle on the flow of things :)?
 #[derive(Accounts)]
 pub struct AddGif<'info> {
     #[account(mut)]
@@ -87,6 +86,7 @@ pub struct AddGif<'info> {
 pub struct VoteGif<'info> {
     #[account(mut)]
     pub base_account: Account<'info, BaseAccount>,
+    #[account(mut)]
     pub user: Signer<'info>,
 }
 
