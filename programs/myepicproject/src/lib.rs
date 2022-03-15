@@ -1,107 +1,77 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::system_program;
 
 declare_id!("FS7Mva1nUZCuNcevF4R53uXYbR8VMEBTDjojHTAJFrFr");
 
 #[program]
 pub mod myepicproject {
     use super::*;
-    pub fn initialize(ctx: Context<Initialize>) -> ProgramResult {
-        let base_account = &mut ctx.accounts.base_account;
-        // Initialize total_gifs.
-        base_account.total_gifs = 0;
-        base_account.gif_list = Vec::new();
-        Ok(())
-    }
+    pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> ProgramResult {
+        let post = &mut ctx.accounts.post;
+        let author = &ctx.accounts.author;
+        let id = post.key();
 
-    pub fn add_gif(ctx: Context<AddGif>, gif_link: String, id: String) -> ProgramResult {
-        let base_account = &mut ctx.accounts.base_account;
-        let user = &mut ctx.accounts.user;
+        if gif_link.chars().count() > 200 {
+            return Err(ErrorCode::LinkTooLong.into());
+        }
 
-        // Build the struct.
-        let item = ItemStruct {
-            id,
-            gif_link,
-            user_address: *user.key,
-            points: 0,
-        };
-
-        // Add it to the gif_list vector.
-        base_account.gif_list.push(item);
-        base_account.total_gifs += 1;
-        Ok(())
-    }
-
-    pub fn vote_gif(ctx: Context<VoteGif>, id: String) -> ProgramResult {
-        let base_account = &mut ctx.accounts.base_account;
-        // let user = &mut ctx.accounts.user;
-        let list = &base_account.gif_list;
-
-        // Map to add score.
-        let new_list = list
-            .iter()
-            .map(|x| {
-                if x.id == id {
-                    ItemStruct {
-                        id: (*x.id).to_string(),
-                        gif_link: (*x.gif_link).to_string(),
-                        user_address: x.user_address,
-                        points: x.points + 1,
-                    }
-                } else {
-                    ItemStruct {
-                        id: (*x.id).to_string(),
-                        gif_link: (*x.gif_link).to_string(),
-                        user_address: x.user_address,
-                        points: x.points,
-                    }
-                }
-            })
-            .collect();
-
-        base_account.gif_list = new_list;
+        post.id = id;
+        post.gif_link = gif_link;
+        post.author = *author.key;
+        post.points = 0;
 
         Ok(())
     }
-}
 
-// this approach is not the good one
-#[derive(Accounts)]
-pub struct Initialize<'info> {
-    #[account(init, payer = user, space = 9000)]
-    pub base_account: Account<'info, BaseAccount>,
-    #[account(mut)]
-    pub user: Signer<'info>,
-    pub system_program: Program<'info, System>,
+    pub fn vote_gif(ctx: Context<VoteGif>) -> ProgramResult {
+        let post = &mut ctx.accounts.post;
+
+        post.points = post.points + 1;
+
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
 pub struct AddGif<'info> {
+    #[account(init, payer = author, space = Post::LEN)]
+    pub post: Account<'info, Post>,
     #[account(mut)]
-    pub base_account: Account<'info, BaseAccount>,
-    #[account(mut)]
-    pub user: Signer<'info>,
+    pub author: Signer<'info>,
+    #[account(address = system_program::ID)]
+    pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
 pub struct VoteGif<'info> {
     #[account(mut)]
-    pub base_account: Account<'info, BaseAccount>,
-    #[account(mut)]
-    pub user: Signer<'info>,
-}
-
-// Create a custom struct for us to work with.
-#[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
-pub struct ItemStruct {
-    pub id: String,
-    pub gif_link: String,
-    pub user_address: Pubkey,
-    pub points: u64,
+    pub post: Account<'info, Post>,
 }
 
 #[account]
-pub struct BaseAccount {
-    pub total_gifs: u64,
-    // Attach a Vector of type ItemStruct to the account.
-    pub gif_list: Vec<ItemStruct>,
+pub struct Post {
+    pub id: Pubkey,
+    pub author: Pubkey,
+    pub gif_link: String,
+    pub points: u64,
+}
+
+const DISCRIMINATOR_LENGTH: usize = 8;
+const PUBLIC_KEY_LENGTH: usize = 32;
+const STRING_LENGTH_PREFIX: usize = 4; // Stores the size of the string.
+const GIFT_LINK_LENGTH: usize = 200 * 4; // 200 chars max.
+const POINTS_LENGTH: usize = 8;
+
+impl Post {
+    const LEN: usize = DISCRIMINATOR_LENGTH
+        + PUBLIC_KEY_LENGTH // id.
+        + PUBLIC_KEY_LENGTH // Author.
+        + STRING_LENGTH_PREFIX + GIFT_LINK_LENGTH // Gift link.
+        + POINTS_LENGTH; // Points.
+}
+
+#[error]
+pub enum ErrorCode {
+    #[msg("The provided link should be 200 characters long maximum.")]
+    LinkTooLong,
 }
