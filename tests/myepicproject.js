@@ -69,6 +69,8 @@ describe('myepicproject', () => {
         signers: [post]
       });
     } catch (error) {
+      console.log('error.msg: ', error);
+      assert.equal(error.msg, 'The provided link should be 200 characters long maximum.');
       return;
     }
 

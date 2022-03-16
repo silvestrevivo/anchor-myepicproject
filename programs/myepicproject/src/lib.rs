@@ -1,19 +1,16 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::system_program;
 
-declare_id!("FS7Mva1nUZCuNcevF4R53uXYbR8VMEBTDjojHTAJFrFr");
+declare_id!("6Ai67BaED9LKdtg5bCSSaadgqApcpEtND4zQVkKddR8e");
 
 #[program]
 pub mod myepicproject {
     use super::*;
-    pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> ProgramResult {
+    pub fn add_gif(ctx: Context<AddGif>, gif_link: String) -> Result<()> {
         let post = &mut ctx.accounts.post;
         let author = &ctx.accounts.author;
         let id = post.key();
 
-        if gif_link.chars().count() > 200 {
-            return Err(ErrorCode::LinkTooLong.into());
-        }
+        require!(gif_link.chars().count() <= 200, ErrorCode::LinkTooLong);
 
         post.id = id;
         post.gif_link = gif_link;
@@ -38,7 +35,6 @@ pub struct AddGif<'info> {
     pub post: Account<'info, Post>,
     #[account(mut)]
     pub author: Signer<'info>,
-    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>,
 }
 
